@@ -243,20 +243,23 @@
             #totalDisplay:empty::after {
                 content: "0";
             }
-           /* #showcaseExpense::before {
+           /*#showcaseExpense::before {
                 content: "-€";
             }*/
         
         
         #til2, 
 #til1, 
-#CardTotal, 
+#cardTotal, 
 #m1m2Total, 
 #totalDisplay {
     font-size: 20px !important;
     font-weight: bold !important; 
 }
                input[type="number"] {    font-size: 15px !important; } 
+               
+                 .input-box.description::before {
+        content: "- ";
 }
         
     </style>
@@ -293,13 +296,13 @@
                 <span><span id="showcaseExpense">0.00</span></span>
             </div>
             <div class="row">
-                <div class="title">CASH TOTAL</div>
+              <div class="title"><i>CASH TOTAL</i></div>
                 <span>€<span id="til2">0.00</span></span>
             </div>
         </div>
         <div class="section">
             <div class="row">
-                <div class="title">CASH TIL</div>
+                <div class="title"><i>CASH TIL</i></div>
                 <input type="number" class="input-box" id="til1" min="0" step="0.01">
             </div>
         </div>
@@ -313,7 +316,7 @@
                 <input type="number" class="input-box card3" min="0" step="0.01">
             </div>
             <div class="row">
-                <div class="title">CARD TOTAL</div>
+              <div class="title"><i>CARD TOTAL</i></div>
                 <span>€<span id="cardTotal">0.00</span></span>
             </div>
         </div>
@@ -327,7 +330,7 @@
                 <input type="number" class="input-box m2" min="0" step="0.01">
             </div>
             <div class="row">
-                <div class="title">MACHINE TOTAL</div>
+              <div class="title"><i>MACHINE TOTAL</i></div>
                 <span>€<span id="m1m2Total">0.00</span></span>
             </div>
         </div>
@@ -353,7 +356,7 @@
                 <input type="number" class="input-box expense" min="0" step="0.01" data-expense="D">
             </div>
             <div class="row">
-                <span>UBER EATS</span>
+                <span>UBER</span>
                 <input type="number" class="input-box expense" min="0" step="0.01" data-expense="U">
             </div>
         </div>
@@ -366,6 +369,11 @@
     </div>
 
 <script>
+   // Make all inputs required and set default to zero
+        document.querySelectorAll('input').forEach(input => {
+            input.setAttribute('required', ''); // Makes field required
+            input.value = '0';                  // Sets default value to 0
+        });
     document.querySelectorAll('.input-box').forEach(input => {
         input.addEventListener('input', function(e) {
             let value = this.value;
@@ -373,7 +381,7 @@
                 this.value = value.slice(0, -1);
             }
             updateCalculations();
-        });
+        }); 
 
         input.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
