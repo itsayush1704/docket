@@ -50,7 +50,7 @@
             font-size: 18px;
             font-weight: bold;
             background: url('data:image/svg+xml;utf8,<svg width="25" height="35" viewBox="-1 02 10 15" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="0" y="14" font-size="14" fill="black">€</text></svg>') no-repeat left center;
-            outline: none;
+           
         }
         .total {
             font-weight: bold;
@@ -256,11 +256,7 @@
     font-size: 20px !important;
     font-weight: bold !important; 
 }
-               input[type="number"] {    font-size: 15px !important; } 
-               
-                 .input-box.description::before {
-        content: "- ";
-}
+             }
         
     </style>
 </head>
@@ -481,12 +477,7 @@
             input.addEventListener('input', updateExpenseTotal);
         });
         // Set initial values explicitly
-        document.getElementById('expense-total').textContent = "0.00";
-        document.getElementById('showcaseExpense').textContent = "0.00";
-        document.getElementById('til2').textContent = "0.00";
-        document.getElementById('cardTotal').textContent = "0.00";
-        document.getElementById('m1m2Total').textContent = "0.00";
-        document.getElementById('totalDisplay').textContent = "0.00";
+       
     });
 </script>
 </body>
