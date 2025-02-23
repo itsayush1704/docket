@@ -366,10 +366,10 @@
 
 <script>
    // Make all inputs required and set default to zero
-        document.querySelectorAll('input').forEach(input => {
+        /*('input').forEach(input => {
             input.setAttribute('required', ''); // Makes field required
             input.value = '0';                  // Sets default value to 0
-        });
+        });*/
     document.querySelectorAll('.input-box').forEach(input => {
         input.addEventListener('input', function(e) {
             let value = this.value;
