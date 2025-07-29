@@ -3,482 +3,728 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Docket Expenses</title>
+    <title>Tuk Asian Street - Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'bounce-delay-1': 'bounce 1s infinite 0.1s',
+                        'bounce-delay-2': 'bounce 1s infinite 0.2s',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            margin-top: 50px; 
-            margin-bottom: 50px;
-        }
-        .container {
-            width: 330px;
-            background: white;
-            padding: 0px;
-            border: 0px solid white;
-        }
-        .section {
-            border-bottom: 2px solid black;
-            padding: 10px 0;
-        }
-        .section:last-child {
-            border-bottom: none;
-        }
-        .title, .row span {
-            color: black;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 5px 0;
-        }
-        .input-box {
-            width: 110px;
-            height: 33px;
-            border: 1px solid black;
-            border-radius: 10px;
-            text-align: right;
-            padding-right: 5px;
-            padding-left: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            background: url('data:image/svg+xml;utf8,<svg width="25" height="35" viewBox="-1 02 10 15" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="0" y="14" font-size="14" fill="black">€</text></svg>') no-repeat left center;
-           
-        }
-        .total {
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .expense-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 5px 0;
-            gap: 5px;
-        }
-        .description {
-            width: 150px !important;
-            text-align: left;
-            padding-left: 10px;
-            background: none;
-            font-size: 15px !important;
-            border-radius: 10px;
-        }
-        .expense-amount {
-            width: 60px !important;
-            font-size: 16px !important;
-            border: 1px solid black;
-            border-radius: 10px;
-            background: url('data:image/svg+xml;utf8,<svg width="20" height="30" viewBox="-2 02 10 15" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="0" y="14" font-size="12" fill="black">€</text></svg>') no-repeat left center !important
-        }
-        .remove-btn {
-            background: #ff4444;
-            color: white;
-            border: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-        }
-        .remove-btn:hover {
-            background: #cc0000;
-        }
-        #expense-list .row {
-            flex-wrap: wrap;
-        }
-        .print-controls {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .print-btn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 10px;
-            width: 100px;
-            height: 35px;
-        }
-        .print-btn:hover {
-            background: #45a049;
-        }
-        .add-expense-btn {
-            background: BLACK;
-            color: white;
-            border: none;
-            padding: 4px 6px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .add-expense-btn:hover {
-            background: #1976D2;
-        }
-        .description::placeholder,
-        .expense-amount::placeholder {
-            font-size: 11px !important;
-        }
-        .total-display {
-            font-weight: bold;
-            text-align: right;
-            padding-right: 5px;
-            padding-left: 20px;
-            font-size: 18px;
-            width: 110px;
-            height: 33px;
-            border: 1px solid black;
-            border-radius: 5px;
-            background: url('data:image/svg+xml;utf8,<svg width="25" height="35" viewBox="-1 02 10 15" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="0" y="14" font-size="14" fill="black">€</text></svg>') no-repeat left center;
-            display: inline-block;
-            line-height: 33px;
-        }
-             @media print {
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #fff;
-                display: block;
-                justify-content: initial;
-                align-items: initial;
-                height: 100%;
-                margin-top: 0px; 
-                margin-bottom: 0px;
-                margin-left:0px; 
-                font-size: 13.5px !important;
+        @media print {
+            body * { visibility: hidden; }
+            .print-area, .print-area * { visibility: visible; }
+            .no-print { display: none !important; }
+            .print-area { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%;
+                font-size: 12px;
             }
-            .container {
-                width: 60mm;
-                border: 0px solid black;
-                padding: 0px;
-                font-size: 13.5px !important;
-            }
-            .section {
-                padding: 1px 0;
-                font-size: 13.5px !important;
-                border-bottom: 1px dotted black;
-            }
-            .title {
-                font-size: 13.5px !important;
-                margin-bottom: 1px;
-            }
-            .input-box, .description, .expense-amount, .total-display {
-                border: none !important;
-                font-size: 13.5px !important;
-            }
-            .row span {
-                font-size: 13.5px !important;
-            }
-            .input-box, .total-display {
-                width: 40mm;
-                height: auto;
-                padding: 0 2px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                font-size: 13.5px !important;
-            }
-            .total {
-                font-size: 13.5px !important;
-                font-weight: bold;
-                white-space: nowrap;
-            }
-            .expense-item {
-                gap: 2px;
-            }
-            .description { 
-                font-size: 13.5px !important;
-            }
-            .description:empty::after {
-                content: "none";
-                font-size: 13.5px !important;
-            }
-            .expense-amount {
-                width: 25mm;
-                font-size: 13.5px !important;
-                text-align: right;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-            .expense-amount:empty::after,
-            .input-box:empty::after {
-                content: "0";
-            }
-            .remove-btn, 
-            button[onclick="addExpenseItem()"], 
-            .print-controls {
-                display: none;
-            }
-            input[type="number"]::-webkit-outer-spin-button,
-            input[type="number"]::-webkit-inner-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
-            input[type="number"] {
-                -moz-appearance: textfield;
-            }
-            .row {
-                justify-content: space-between;
-            }
-            /* Ensure totals show "0" when empty or zero */
-            #expense-total:empty::after,
-            #cashTotal:empty::after,
-            #til2:empty::after,
-            #cardTotal:empty::after,
-            #m1m2Total:empty::after,
-            #totalDisplay:empty::after {
-                content: "0";
-            }
-           /*#showcaseExpense::before {
-                content: "-€";
-            }*/
+        }
         
+        .loading-dot {
+            animation: bounce 1s infinite;
+        }
         
-        #til2, 
-#til1, 
-#cardTotal, 
-#m1m2Total, 
-#totalDisplay {
-    font-size: 20px !important;
-    font-weight: bold !important; 
-}
-             }
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.1s;
+        }
         
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.2s;
+        }
     </style>
 </head>
-<body>   
-<div class="container">
-        <div class="print-controls">
-            <button class="print-btn" onclick="window.print()">Print</button>
-        </div><div class="section"></div>
-        <div class="section">
-            <div class="title"><u>EXPENSES:</u></div>
-            <div id="expense-list">
+<body class="min-h-screen bg-green-50">
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-gradient-to-br from-green-400 via-green-500 to-green-600 flex items-center justify-center z-50">
+        <div class="text-center">
+            <div class="mb-8">
+                <img 
+                    src="https://flipdish.imgix.net/Vrp16UhlZjOqwGVlneofBdwMgo.png?w=250&fm=png32" 
+                    alt="Tuk Asian Street Food Logo" 
+                    class="mx-auto w-32 h-32 object-contain animate-pulse"
+                />
             </div>
-            <div class="row">
-                <button class="add-expense-btn" onclick="addExpenseItem()">Add Expense</button>
-                <span>Total: €<span id="expense-total">0.00</span></span>
-            </div>
-        </div>
-        <div class="section">
-            <div class="row">
-                <div class="title">cash 1</div>
-                <input type="number" class="input-box cash1" min="0" step="0.01">
-            </div>
-            <div class="row">
-                <div class="title">cash 3</div>
-                <input type="number" class="input-box cash3" min="0" step="0.01">
-            </div>
-            <div class="row">
-                <div class="title">total</div>
-                <input type="number" class="input-box" id="cashTotal" min="0" step="0.01" readonly>
-            </div>
-            <div class="row">
-                -(expenses)
-                <span><span id="showcaseExpense">0.00</span></span>
-            </div>
-            <div class="row">
-              <div class="title"><i>CASH TOTAL</i></div>
-                <span>€<span id="til2">0.00</span></span>
-            </div>
-        </div>
-        <div class="section">
-            <div class="row">
-                <div class="title"><i>CASH TIL</i></div>
-                <input type="number" class="input-box" id="til1" min="0" step="0.01">
-            </div>
-        </div>
-        <div class="section">
-            <div class="row">
-                <div class="title">card 1</div>
-                <input type="number" class="input-box card1" min="0" step="0.01">
-            </div>
-            <div class="row">
-                <div class="title">card 3</div>
-                <input type="number" class="input-box card3" min="0" step="0.01">
-            </div>
-            <div class="row">
-              <div class="title"><i>CARD TOTAL</i></div>
-                <span>€<span id="cardTotal">0.00</span></span>
-            </div>
-        </div>
-        <div class="section">
-            <div class="row">
-                <div class="title">m1</div>
-                <input type="number" class="input-box m1" min="0" step="0.01">
-            </div>
-            <div class="row">
-                <div class="title">m2</div>
-                <input type="number" class="input-box m2" min="0" step="0.01">
-            </div>
-            <div class="row">
-              <div class="title"><i>MACHINE TOTAL</i></div>
-                <span>€<span id="m1m2Total">0.00</span></span>
-            </div>
-        </div>
-        <div class="section">
-            <div class="row">
-                <span>1)</span>
-                <input type="number" class="input-box expense" min="0" step="0.01" data-expense="1">
-            </div>
-            <div class="row">
-                <span>2)</span>
-                <input type="number" class="input-box expense" min="0" step="0.01" data-expense="2">
-            </div>
-            <div class="row">
-                <span>3)</span>
-                <input type="number" class="input-box expense" min="0" step="0.01" data-expense="3">
-            </div>
-            <div class="row">
-                <span>JUST EAT</span>
-                <input type="number" class="input-box expense" min="0" step="0.01" data-expense="J">
-            </div>
-            <div class="row">
-                <span>DELIVERO</span>
-                <input type="number" class="input-box expense" min="0" step="0.01" data-expense="D">
-            </div>
-            <div class="row">
-                <span>UBER</span>
-                <input type="number" class="input-box expense" min="0" step="0.01" data-expense="U">
-            </div>
-        </div>
-        <div class="section total">
-            <div class="row">
-                <div class="title">GRAND TOTAL</div>
-                <span>€<span id="totalDisplay">0.00</span></span>
+            <div class="text-white text-2xl font-bold mb-4">Loading...</div>
+            <div class="flex space-x-2 justify-center">
+                <div class="w-3 h-3 bg-white rounded-full loading-dot"></div>
+                <div class="w-3 h-3 bg-white rounded-full loading-dot"></div>
+                <div class="w-3 h-3 bg-white rounded-full loading-dot"></div>
             </div>
         </div>
     </div>
 
-<script>
-   // Make all inputs required and set default to zero
-        /*('input').forEach(input => {
-            input.setAttribute('required', ''); // Makes field required
-            input.value = '0';                  // Sets default value to 0
-        });*/
-    document.querySelectorAll('.input-box').forEach(input => {
-        input.addEventListener('input', function(e) {
-            let value = this.value;
-            if (!/^\d*\.?\d*$/.test(value)) {
-                this.value = value.slice(0, -1);
+    <!-- Main Application -->
+    <div id="mainApp" class="hidden">
+        <!-- Header with Logo and Tabs -->
+        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg">
+            <div class="max-w-6xl mx-auto px-6 py-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-4">
+                        <img 
+                            src="https://flipdish.imgix.net/Vrp16UhlZjOqwGVlneofBdwMgo.png?w=250&fm=png32" 
+                            alt="Tuk Asian Street Food Logo" 
+                            class="w-16 h-16 object-contain bg-white rounded-lg p-2"
+                        />
+                        <div>
+                            <h1 class="text-3xl font-bold">Tuk Asian Street</h1>
+                            <p class="text-green-100 font-medium">Management System</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab Navigation -->
+                <div class="flex space-x-1">
+                    <button
+                        onclick="switchTab('docket')"
+                        id="docket-tab"
+                        class="px-6 py-3 rounded-t-lg font-medium transition-colors bg-white text-green-600"
+                    >
+                        📄 Night Docket
+                    </button>
+                    <button
+                        onclick="switchTab('tips')"
+                        id="tips-tab"
+                        class="px-6 py-3 rounded-t-lg font-medium transition-colors bg-green-400 text-white hover:bg-green-300"
+                    >
+                        🧮 Tip Calculator
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="max-w-6xl mx-auto p-6">
+            <!-- Docket Tab -->
+            <div id="docket-content" class="bg-white rounded-lg shadow-lg border border-green-200">
+                <!-- Print Button -->
+                <div class="p-4 border-b border-green-200 no-print">
+                    <button
+                        onclick="printDocket()"
+                        class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                        Print Docket
+                    </button>
+                </div>
+
+                <div class="p-6 max-w-md mx-auto print-area">
+                    <!-- Expenses Section -->
+                    <div class="border-b-2 border-black pb-4 mb-4">
+                        <h3 class="font-bold text-lg mb-3 underline">EXPENSES:</h3>
+                        <div id="expenses-list" class="space-y-2">
+                            <!-- Expenses will be added here dynamically -->
+                        </div>
+                        <div class="flex justify-between items-center mt-3">
+                            <button
+                                onclick="addExpense()"
+                                class="bg-black text-white px-3 py-1 rounded text-sm hover:bg-gray-800 no-print"
+                            >
+                                Add Expense
+                            </button>
+                            <span class="font-bold">Total: €<span id="expense-total">0.00</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Cash Section -->
+                    <div class="border-b-2 border-black pb-4 mb-4">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">cash 1</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <input
+                                        type="number"
+                                        id="cash1"
+                                        onchange="updateCalculations()"
+                                        step="0.01"
+                                        class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                    />
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">cash 3</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <input
+                                        type="number"
+                                        id="cash3"
+                                        onchange="updateCalculations()"
+                                        step="0.01"
+                                        class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                    />
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">total</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <div class="w-28 p-2 pl-6 border border-black rounded-lg text-right bg-gray-100" id="cash-total">
+                                        0.00
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>-(expenses)</span>
+                                <span id="expenses-deduction">-0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold italic">CASH TOTAL</span>
+                                <span class="font-bold" id="cash-after-expenses">€0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cash Til Section -->
+                    <div class="border-b-2 border-black pb-4 mb-4">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold italic">CASH TIL</span>
+                            <div class="relative">
+                                <span class="absolute left-2 top-2">€</span>
+                                <input
+                                    type="number"
+                                    id="til1"
+                                    step="0.01"
+                                    class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Section -->
+                    <div class="border-b-2 border-black pb-4 mb-4">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">card 1</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <input
+                                        type="number"
+                                        id="card1"
+                                        onchange="updateCalculations()"
+                                        step="0.01"
+                                        class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                    />
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">card 3</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <input
+                                        type="number"
+                                        id="card3"
+                                        onchange="updateCalculations()"
+                                        step="0.01"
+                                        class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                    />
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold italic">CARD TOTAL</span>
+                                <span class="font-bold" id="card-total">€0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Machine Section -->
+                    <div class="border-b-2 border-black pb-4 mb-4">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">m1</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <input
+                                        type="number"
+                                        id="m1"
+                                        onchange="updateCalculations()"
+                                        step="0.01"
+                                        class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                    />
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">m2</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <input
+                                        type="number"
+                                        id="m2"
+                                        onchange="updateCalculations()"
+                                        step="0.01"
+                                        class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                    />
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold italic">MACHINE TOTAL</span>
+                                <span class="font-bold" id="machine-total">€0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Services Section -->
+                    <div class="border-b-2 border-black pb-4 mb-4">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">1)</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <input
+                                        type="number"
+                                        id="exp1"
+                                        onchange="updateCalculations()"
+                                        step="0.01"
+                                        class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                    />
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">2)</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <input
+                                        type="number"
+                                        id="exp2"
+                                        onchange="updateCalculations()"
+                                        step="0.01"
+                                        class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                    />
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">3)</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <input
+                                        type="number"
+                                        id="exp3"
+                                        onchange="updateCalculations()"
+                                        step="0.01"
+                                        class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                    />
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">JUST EAT</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <input
+                                        type="number"
+                                        id="justEat"
+                                        onchange="updateCalculations()"
+                                        step="0.01"
+                                        class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                    />
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">DELIVERO</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <input
+                                        type="number"
+                                        id="deliveroo"
+                                        onchange="updateCalculations()"
+                                        step="0.01"
+                                        class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                    />
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">UBER</span>
+                                <div class="relative">
+                                    <span class="absolute left-2 top-2">€</span>
+                                    <input
+                                        type="number"
+                                        id="uber"
+                                        onchange="updateCalculations()"
+                                        step="0.01"
+                                        class="w-28 p-2 pl-6 border border-black rounded-lg text-right"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grand Total -->
+                    <div class="pb-4">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg">GRAND TOTAL</span>
+                            <span class="font-bold text-xl" id="grand-total">€0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips Tab -->
+            <div id="tips-content" class="hidden grid md:grid-cols-2 gap-8">
+                <!-- Input Section -->
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-green-200">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-green-800">
+                            💰 Total Tip Amount
+                        </h2>
+                        <input
+                            type="number"
+                            id="total-tip"
+                            placeholder="Enter total tip amount"
+                            class="w-full p-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
+                        />
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-green-200">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-green-800">
+                            👥 Number of People Working
+                        </h2>
+                        <select
+                            id="num-people"
+                            onchange="updatePeopleInputs()"
+                            class="w-full p-3 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
+                        >
+                            <option value="1">1 Person</option>
+                            <option value="2">2 People</option>
+                            <option value="3">3 People</option>
+                            <option value="4">4 People</option>
+                            <option value="5">5 People</option>
+                            <option value="6">6 People</option>
+                            <option value="7">7 People</option>
+                            <option value="8">8 People</option>
+                            <option value="9">9 People</option>
+                            <option value="10">10 People</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-green-200">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 text-green-800">
+                            ⏰ Hours Worked
+                        </h2>
+                        <div id="hours-inputs" class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <span class="text-green-700 font-medium min-w-[80px]">Person 1:</span>
+                                <input
+                                    type="number"
+                                    id="hours-1"
+                                    placeholder="Hours"
+                                    step="0.5"
+                                    class="flex-1 p-2 border border-green-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                />
+                                <span class="text-green-600 text-sm">hours</span>
+                            </div>
+                        </div>
+                        
+                        <button
+                            onclick="calculateTips()"
+                            class="w-full mt-6 bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 text-lg shadow-md"
+                        >
+                            🧮 Calculate Tips
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="space-y-6">
+                    <div id="tip-results" class="hidden bg-white p-6 rounded-lg shadow-md border border-green-200">
+                        <h2 class="text-xl font-semibold mb-4 text-green-800">Tip Distribution Results</h2>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="text-green-700">Total Tip:</span>
+                                        <p class="font-bold text-2xl text-green-800" id="result-total-tip">$0.00</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-green-700">Kitchen (40%):</span>
+                                        <p class="font-bold text-2xl text-green-600" id="result-kitchen-tip">$0.00</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <h3 class="font-medium mb-3 text-green-800">Distribution Among Workers (60%)</h3>
+                                <div class="text-sm text-green-700 mb-4" id="distribution-info">
+                                    Amount to distribute: $0.00 | Total hours: 0
+                                </div>
+                                
+                                <div id="person-results" class="space-y-3">
+                                    <!-- Results will be populated here -->
+                                </div>
+                            </div>
+
+                            <div class="bg-green-100 p-4 rounded-lg border border-green-300">
+                                <h3 class="font-medium text-green-800 mb-2">How It Works</h3>
+                                <div class="text-sm text-green-700 space-y-1">
+                                    <p>• Kitchen automatically gets 40% of total tips</p>
+                                    <p>• Remaining 60% is divided proportionally based on hours worked</p>
+                                    <p>• More hours worked = larger share of the 60%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-green-600 pb-4">
+            <p class="text-sm">© 2024 Tuk Asian Street Food - Management System</p>
+        </div>
+    </div>
+
+    <script>
+        let activeTab = 'docket';
+        let expenses = [];
+        let expenseIdCounter = 1;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show loading screen for 2.5 seconds
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('mainApp').classList.remove('hidden');
+            }, 2500);
+        });
+
+        function switchTab(tab) {
+            activeTab = tab;
+            
+            // Update tab buttons
+            const docketTab = document.getElementById('docket-tab');
+            const tipsTab = document.getElementById('tips-tab');
+            const docketContent = document.getElementById('docket-content');
+            const tipsContent = document.getElementById('tips-content');
+            
+            if (tab === 'docket') {
+                docketTab.className = 'px-6 py-3 rounded-t-lg font-medium transition-colors bg-white text-green-600';
+                tipsTab.className = 'px-6 py-3 rounded-t-lg font-medium transition-colors bg-green-400 text-white hover:bg-green-300';
+                docketContent.classList.remove('hidden');
+                tipsContent.classList.add('hidden');
+            } else {
+                tipsTab.className = 'px-6 py-3 rounded-t-lg font-medium transition-colors bg-white text-green-600';
+                docketTab.className = 'px-6 py-3 rounded-t-lg font-medium transition-colors bg-green-400 text-white hover:bg-green-300';
+                tipsContent.classList.remove('hidden');
+                docketContent.classList.add('hidden');
             }
+        }
+
+        function addExpense() {
+            const expense = {
+                id: expenseIdCounter++,
+                description: '',
+                amount: ''
+            };
+            expenses.push(expense);
+            renderExpenses();
+        }
+
+        function removeExpense(id) {
+            expenses = expenses.filter(exp => exp.id !== id);
+            renderExpenses();
             updateCalculations();
-        }); 
+        }
 
-        input.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                let inputs = Array.from(document.querySelectorAll('.input-box:not([readonly])'));
-                let index = inputs.indexOf(this);
-                if (index < inputs.length - 1) {
-                    inputs[index + 1].focus();
-                }
+        function updateExpense(id, field, value) {
+            const expense = expenses.find(exp => exp.id === id);
+            if (expense) {
+                expense[field] = value;
+                updateCalculations();
             }
+        }
+
+        function renderExpenses() {
+            const container = document.getElementById('expenses-list');
+            container.innerHTML = '';
+            
+            expenses.forEach(expense => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-2';
+                div.innerHTML = `
+                    <input
+                        type="text"
+                        value="${expense.description}"
+                        onchange="updateExpense(${expense.id}, 'description', this.value)"
+                        placeholder="Description"
+                        class="flex-1 p-2 border border-gray-300 rounded-lg text-sm"
+                    />
+                    <div class="relative">
+                        <span class="absolute left-2 top-2 text-sm">€</span>
+                        <input
+                            type="number"
+                            value="${expense.amount}"
+                            onchange="updateExpense(${expense.id}, 'amount', this.value)"
+                            placeholder="0.00"
+                            step="0.01"
+                            class="w-20 p-2 pl-6 border border-gray-300 rounded-lg text-sm text-right"
+                        />
+                    </div>
+                    <button
+                        onclick="removeExpense(${expense.id})"
+                        class="bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs hover:bg-red-600 no-print"
+                    >
+                        ×
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateCalculations() {
+            // Calculate expense total
+            const expenseTotal = expenses.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
+            document.getElementById('expense-total').textContent = expenseTotal.toFixed(2);
+            document.getElementById('expenses-deduction').textContent = '-' + expenseTotal.toFixed(2);
+            
+            // Calculate cash total
+            const cash1 = parseFloat(document.getElementById('cash1').value) || 0;
+            const cash3 = parseFloat(document.getElementById('cash3').value) || 0;
+            const cashTotal = cash1 + cash3;
+            document.getElementById('cash-total').textContent = cashTotal.toFixed(2);
+            
+            // Calculate cash after expenses
+            const cashAfterExpenses = cashTotal - expenseTotal;
+            document.getElementById('cash-after-expenses').textContent = '€' + cashAfterExpenses.toFixed(2);
+            
+            // Calculate card total
+            const card1 = parseFloat(document.getElementById('card1').value) || 0;
+            const card3 = parseFloat(document.getElementById('card3').value) || 0;
+            const cardTotal = card1 + card3;
+            document.getElementById('card-total').textContent = '€' + cardTotal.toFixed(2);
+            
+            // Calculate machine total
+            const m1 = parseFloat(document.getElementById('m1').value) || 0;
+            const m2 = parseFloat(document.getElementById('m2').value) || 0;
+            const machineTotal = m1 + m2;
+            document.getElementById('machine-total').textContent = '€' + machineTotal.toFixed(2);
+            
+            // Calculate delivery total (grand total)
+            const exp1 = parseFloat(document.getElementById('exp1').value) || 0;
+            const exp2 = parseFloat(document.getElementById('exp2').value) || 0;
+            const exp3 = parseFloat(document.getElementById('exp3').value) || 0;
+            const justEat = parseFloat(document.getElementById('justEat').value) || 0;
+            const deliveroo = parseFloat(document.getElementById('deliveroo').value) || 0;
+            const uber = parseFloat(document.getElementById('uber').value) || 0;
+            const grandTotal = exp1 + exp2 + exp3 + justEat + deliveroo + uber;
+            document.getElementById('grand-total').textContent = '€' + grandTotal.toFixed(2);
+        }
+
+        function printDocket() {
+            window.print();
+        }
+
+        function updatePeopleInputs() {
+            const numPeople = parseInt(document.getElementById('num-people').value);
+            const container = document.getElementById('hours-inputs');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= numPeople; i++) {
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-3';
+                div.innerHTML = `
+                    <span class="text-green-700 font-medium min-w-[80px]">Person ${i}:</span>
+                    <input
+                        type="number"
+                        id="hours-${i}"
+                        placeholder="Hours"
+                        step="0.5"
+                        class="flex-1 p-2 border border-green-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                    <span class="text-green-600 text-sm">hours</span>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        function calculateTips() {
+            const totalTip = parseFloat(document.getElementById('total-tip').value) || 0;
+            const numPeople = parseInt(document.getElementById('num-people').value);
+            
+            if (totalTip <= 0) {
+                alert('Please enter a valid tip amount');
+                return;
+            }
+            
+            const kitchenTip = totalTip * 0.4;
+            const distributionAmount = totalTip * 0.6;
+            
+            // Get hours for each person
+            const people = [];
+            let totalHours = 0;
+            
+            for (let i = 1; i <= numPeople; i++) {
+                const hours = parseFloat(document.getElementById(`hours-${i}`).value) || 0;
+                people.push({ person: i, hours });
+                totalHours += hours;
+            }
+            
+            if (totalHours <= 0) {
+                alert('Please enter valid hours for at least one person');
+                return;
+            }
+            
+            // Calculate individual tips
+            const results = people.map(person => {
+                const percentage = totalHours > 0 ? (person.hours / totalHours) : 0;
+                const tipAmount = distributionAmount * percentage;
+                
+                return {
+                    ...person,
+                    percentage: percentage * 100,
+                    tipAmount
+                };
+            });
+            
+            // Display results
+            document.getElementById('result-total-tip').textContent = '€' + totalTip.toFixed(2);
+            document.getElementById('result-kitchen-tip').textContent = '€' + kitchenTip.toFixed(2);
+            document.getElementById('distribution-info').textContent = 
+                `Amount to distribute: ${distributionAmount.toFixed(2)} | Total hours: ${totalHours}`;
+            
+            // Render individual results
+            const personResults = document.getElementById('person-results');
+            personResults.innerHTML = '';
+            
+            results.forEach(person => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center py-3 border-b border-green-200 last:border-b-0';
+                div.innerHTML = `
+                    <div class="flex-1">
+                        <div class="font-medium text-green-800 text-lg">
+                            Person ${person.person}
+                        </div>
+                        <div class="text-sm text-green-600">
+                            ${person.hours} hours worked
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-xl text-green-600">
+                            ${person.tipAmount.toFixed(2)}
+                        </div>
+                        <div class="text-sm text-green-500">
+                            ${person.percentage.toFixed(1)}% of distribution
+                        </div>
+                    </div>
+                `;
+                personResults.appendChild(div);
+            });
+            
+            // Show results section
+            document.getElementById('tip-results').classList.remove('hidden');
+        }
+
+        // Initialize calculations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCalculations();
         });
-    });
-
-    function updateCalculations() {
-        let cash1 = parseFloat(document.querySelector('.cash1').value) || 0;
-        let cash3 = parseFloat(document.querySelector('.cash3').value) || 0;
-        let cashTotal = (cash1 + cash3).toFixed(2);
-        document.getElementById('cashTotal').value = cashTotal !== "0.00" ? cashTotal : "0.00";
-
-        const expenseTotal = parseFloat(document.getElementById('expense-total').textContent) || 0;
-  		document.getElementById('showcaseExpense').textContent = "-" + expenseTotal.toFixed(2);
-
-        let til1 = parseFloat(document.getElementById('til1').value) || 0;
-        let til2 = (cashTotal - expenseTotal).toFixed(2);
-        document.getElementById('til2').textContent = til2 !== "0.00" ? til2 : "0.00";
-
-        let card1 = parseFloat(document.querySelector('.card1').value) || 0;
-        let card3 = parseFloat(document.querySelector('.card3').value) || 0;
-        let cardTotal = (card1 + card3).toFixed(2);
-        document.getElementById('cardTotal').textContent = cardTotal !== "0.00" ? cardTotal : "0.00";
-
-        let m1 = parseFloat(document.querySelector('.m1').value) || 0;
-        let m2 = parseFloat(document.querySelector('.m2').value) || 0;
-        let m1m2Total = (m1 + m2).toFixed(2);
-        document.getElementById('m1m2Total').textContent = m1m2Total !== "0.00" ? m1m2Total : "0.00";
-
-        let total = 0;
-        document.querySelectorAll('.expense').forEach(input => {
-            if (input.value) total += parseFloat(input.value) || 0;
-        });
-        document.getElementById('totalDisplay').textContent = total !== 0 ? total.toFixed(2) : "0.00";
-    }
-    
-    function addExpenseItem() {
-        const container = document.getElementById('expense-list');
-        const div = document.createElement('div');
-        div.className = 'row expense-item';
-        
-        const span = document.createElement('span');
-        span.textContent = '';
-        
-        const description = document.createElement('input');
-        description.type = 'text';
-        description.className = 'input-box description';
-        description.placeholder = 'Expense description';
-        description.style.width = '50px';
-        description.style.fontSize = '14px';
-        
-        const amount = document.createElement('input');
-        amount.type = 'number';
-        amount.className = 'input-box expense-amount';
-        amount.min = '0';
-        amount.step = '0.01';
-        amount.placeholder = 'Amount';
-        amount.style.width = '50px';
-        amount.style.fontSize = '14px';
-        
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-btn';
-        removeBtn.textContent = '×';
-        removeBtn.onclick = () => removeExpense(removeBtn);
-        
-        div.appendChild(span);
-        div.appendChild(description);
-        div.appendChild(amount);
-        div.appendChild(removeBtn);
-        container.appendChild(div);
-        
-        amount.addEventListener('input', updateExpenseTotal);
-    }
-
-    function removeExpense(btn) {
-        btn.parentElement.remove();
-        updateExpenseTotal();
-    }
-
-    function updateExpenseTotal() {
-        const amounts = Array.from(document.querySelectorAll('.expense-amount'))
-            .map(input => parseFloat(input.value) || 0);
-        const total = amounts.reduce((sum, amount) => sum + amount, 0);
-        document.getElementById('expense-total').textContent = total !== 0 ? total.toFixed(2) : "0.00";
-        updateCalculations();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.expense-amount').forEach(input => {
-            input.addEventListener('input', updateExpenseTotal);
-        });
-        // Set initial values explicitly
-       
-    });
-</script>
+    </script>
 </body>
 </html>
