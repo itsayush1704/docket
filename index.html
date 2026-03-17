@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tuk Asian Street - Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
+        (function() {
+            // Replace with your EmailJS Public Key
+            emailjs.init({
+              publicKey: "dMvv5s2Nn-kczJ3pM",
+            });
+        })();
         tailwind.config = {
             theme: {
                 extend: {
@@ -22,6 +29,7 @@
             body * { visibility: hidden; }
             .print-area, .print-area * { visibility: visible; }
             .no-print { display: none !important; }
+            #creator-name-print { display: block !important; }
             .print-area { 
                 position: absolute; 
                 left: 0; 
@@ -90,7 +98,7 @@
                         id="docket-tab"
                         class="px-6 py-3 rounded-t-lg font-medium transition-colors bg-white text-green-600"
                     >
-                        📄 Night Docket
+                        📄 Night Report
                     </button>
                     <button
                         onclick="switchTab('tips')"
@@ -107,17 +115,63 @@
         <div class="max-w-6xl mx-auto p-6">
             <!-- Docket Tab -->
             <div id="docket-content" class="bg-white rounded-lg shadow-lg border border-green-200">
-                <!-- Print Button -->
-                <div class="p-4 border-b border-green-200 no-print">
-                    <button
-                        onclick="printDocket()"
-                        class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                        Print Docket
-                    </button>
+                <!-- Print and Email Buttons -->
+                <div class="p-4 border-b border-green-200 no-print flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex gap-3">
+                        <button
+                            onclick="printDocket()"
+                            class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+                        >
+                            <span>🖨️ Print Docket</span>
+                        </button>
+                        <button
+                            id="send-email-btn"
+                            onclick="sendEmailToLuWei()"
+                            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <span id="email-btn-text">📧 Send to Lu Wei</span>
+                            <span id="email-loader" class="hidden">
+                                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                    
+                    <!-- Notification Toast -->
+                    <div id="notification" class="hidden fixed top-6 right-6 z-50 animate-bounce-delay-1">
+                        <div id="notification-content" class="px-6 py-3 rounded-lg shadow-2xl text-white font-bold flex items-center gap-3">
+                            <span id="notification-icon"></span>
+                            <span id="notification-text"></span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="p-6 max-w-md mx-auto print-area">
+                    <!-- Docket Header -->
+                    <div class="border-b-2 border-black pb-4 mb-4">
+                        <div class="flex justify-between items-end">
+                            <div class="flex-1 mr-4">
+                                <label class="block text-xs font-bold uppercase mb-1">Created By:</label>
+                                <input
+                                    type="text"
+                                    id="creator-name"
+                                    placeholder="Enter Name"
+                                    oninput="document.getElementById('creator-name-print').textContent = this.value"
+                                    class="w-full p-1 border-b border-black outline-none font-bold no-print"
+                                />
+                                <div id="creator-name-print" class="hidden font-bold border-b border-black p-1"></div>
+                            </div>
+                            <div class="text-right">
+                                <label class="block text-xs font-bold uppercase mb-1">Date:</label>
+                                <div id="current-date" class="font-bold border-b border-black px-2 py-1">
+                                    <!-- Auto-populated -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Expenses Section -->
                     <div class="border-b-2 border-black pb-4 mb-4">
                         <h3 class="font-bold text-lg mb-3 underline">EXPENSES:</h3>
@@ -488,6 +542,14 @@
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
+            // Set current date
+            const dateElement = document.getElementById('current-date');
+            if (dateElement) {
+                const now = new Date();
+                const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                dateElement.textContent = now.toLocaleDateString('en-GB', options);
+            }
+
             // Show loading screen for 2.5 seconds
             setTimeout(() => {
                 document.getElementById('loadingScreen').style.display = 'none';
@@ -719,6 +781,257 @@
             
             // Show results section
             document.getElementById('tip-results').classList.remove('hidden');
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const content = document.getElementById('notification-content');
+            const icon = document.getElementById('notification-icon');
+            const text = document.getElementById('notification-text');
+            
+            text.textContent = message;
+            
+            if (type === 'success') {
+                content.className = 'px-6 py-3 rounded-lg shadow-2xl text-white font-bold flex items-center gap-3 bg-green-600';
+                icon.innerHTML = '✅';
+            } else {
+                content.className = 'px-6 py-3 rounded-lg shadow-2xl text-white font-bold flex items-center gap-3 bg-red-600';
+                icon.innerHTML = '❌';
+            }
+            
+            notification.classList.remove('hidden');
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 5000);
+        }
+
+        async function sendEmailToLuWei() {
+            const btn = document.getElementById('send-email-btn');
+            const btnText = document.getElementById('email-btn-text');
+            const loader = document.getElementById('email-loader');
+            const creator = document.getElementById('creator-name').value || 'Unknown';
+            const date = document.getElementById('current-date').textContent;
+            
+            // Format data for the email
+            const expenseTotal = document.getElementById('expense-total').textContent;
+            const cash1 = document.getElementById('cash1').value || '0.00';
+            const cash3 = document.getElementById('cash3').value || '0.00';
+            const cashTotal = document.getElementById('cash-total').textContent;
+            const cashAfterExpenses = document.getElementById('cash-after-expenses').textContent;
+            const til1 = document.getElementById('til1').value || '0.00';
+            const card1 = document.getElementById('card1').value || '0.00';
+            const card3 = document.getElementById('card3').value || '0.00';
+            const cardTotalTotal = document.getElementById('card-total').textContent;
+            const m1 = document.getElementById('m1').value || '0.00';
+            const m2 = document.getElementById('m2').value || '0.00';
+            const machineTotalTotal = document.getElementById('machine-total').textContent;
+            const exp1 = document.getElementById('exp1').value || '0.00';
+            const exp2 = document.getElementById('exp2').value || '0.00';
+            const exp3 = document.getElementById('exp3').value || '0.00';
+            const justEat = document.getElementById('justEat').value || '0.00';
+            const deliveroo = document.getElementById('deliveroo').value || '0.00';
+            const uber = document.getElementById('uber').value || '0.00';
+            const grandTotal = document.getElementById('grand-total').textContent;
+
+            // Calculate differences for validation (Difference of 2 is OK)
+            const cashVal = parseFloat(cashTotal) || 0;
+            const tilVal = parseFloat(til1) || 0;
+            const cashTick = Math.abs(cashVal - tilVal) <= 2 ? ' ✅' : '';
+
+            const cardVal = parseFloat(cardTotalTotal.replace(/[^\d.-]/g, '')) || 0;
+            const machineVal = parseFloat(machineTotalTotal.replace(/[^\d.-]/g, '')) || 0;
+            const machineTick = Math.abs(cardVal - machineVal) <= 2 ? ' ✅' : '';
+
+            // List of expenses
+            const expenseItems = expenses.map(e => `
+                <div style="display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px dashed #eee;">
+                    <span>• ${e.description}</span>
+                    <span style="font-weight: bold;">€${e.amount}</span>
+                </div>
+            `).join('') || '<div>No expenses</div>';
+
+            const emailHtml = `
+ <div style="font-family: system-ui, sans-serif, Arial; font-size: 14px; color: #333; padding: 20px 10px; background-color: #16a34a;">
+   <div style="max-width: 450px; margin: auto; background-color: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+     <!-- Header -->
+     <div style="text-align: center; padding: 20px; border-bottom: 2px dashed #eee;">
+         <img src="https://flipdish.imgix.net/Vrp16UhlZjOqwGVlneofBdwMgo.png?w=250&fm=png32" alt="TUK Logo" style="height: 60px; margin-bottom: 10px;">
+         <h2 style="margin: 0; color: #16a34a; font-size: 20px; text-transform: uppercase;">Tuk Asian Street</h2>
+         <p style="margin: 2px 0; font-size: 12px; color: #666;">Night Report</p>
+     </div>
+
+     <div style="padding: 20px;">
+       <!-- Meta Info -->
+       <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+           <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+               <span style="color: #666;">Created By:</span>
+               <span style="font-weight: bold;">${creator}</span>
+           </div>
+           <div style="display: flex; justify-content: space-between;">
+               <span style="color: #666;">Date:</span>
+               <span style="font-weight: bold;">${date}</span>
+           </div>
+       </div>
+
+       <!-- Expenses Section -->
+       <div style="margin-bottom: 20px;">
+           <h3 style="font-size: 14px; color: #16a34a; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #16a34a; padding-bottom: 3px;">🧾 Expenses</h3>
+           <div style="font-size: 13px;">
+               ${expenseItems}
+               <div style="display: flex; justify-content: space-between; margin-top: 10px; font-weight: bold; border-top: 1px dashed #ddd; padding-top: 8px;">
+                   <span>Total Expenses:</span>
+                   <span>€${expenseTotal}</span>
+               </div>
+           </div>
+       </div>
+
+       <!-- Cash Section -->
+       <div style="margin-bottom: 20px;">
+           <h3 style="font-size: 14px; color: #16a34a; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #16a34a; padding-bottom: 3px;">💵 Cash</h3>
+           <div style="font-size: 13px;">
+               <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                   <span>Cash 1:</span>
+                   <span>€${cash1}</span>
+               </div>
+               <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                   <span>Cash 3:</span>
+                   <span>€${cash3}</span>
+               </div>
+               <div style="display: flex; justify-content: space-between; margin-top: 5px; border-top: 1px dashed #ddd; padding-top: 5px; font-weight: bold;">
+                   <span>Subtotal:</span>
+                   <span>€${cashTotal}</span>
+               </div>
+               <div style="display: flex; justify-content: space-between; color: #dc2626; font-size: 12px;">
+                   <span>-(Expenses):</span>
+                   <span>-€${expenseTotal}</span>
+               </div>
+               <div style="display: flex; justify-content: space-between; margin-top: 5px; font-weight: bold; font-size: 15px; color: #16a34a;">
+                   <span>CASH TOTAL:</span>
+                   <span>${cashAfterExpenses}</span>
+               </div>
+           </div>
+       </div>
+
+       <!-- Til Section -->
+       <div style="margin-bottom: 20px; padding: 10px; background-color: #f0fdf4; border-radius: 4px; display: flex; justify-content: space-between; font-weight: bold; border: 1px solid #bcf0da;">
+           <span style="color: #16a34a;">🏧 CASH TIL:</span>
+           <span>€${til1}${cashTick}</span>
+       </div>
+
+       <!-- Card Section -->
+       <div style="margin-bottom: 20px;">
+           <h3 style="font-size: 14px; color: #16a34a; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #16a34a; padding-bottom: 3px;">💳 Card</h3>
+           <div style="font-size: 13px;">
+               <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                   <span>Card 1:</span>
+                   <span>€${card1}</span>
+               </div>
+               <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                   <span>Card 3:</span>
+                   <span>€${card3}</span>
+               </div>
+               <div style="display: flex; justify-content: space-between; margin-top: 5px; font-weight: bold; color: #16a34a; border-top: 1px dashed #ddd; padding-top: 5px;">
+                   <span>CARD TOTAL:</span>
+                   <span>${cardTotalTotal}</span>
+               </div>
+           </div>
+       </div>
+
+       <!-- Machine Section -->
+       <div style="margin-bottom: 20px;">
+           <h3 style="font-size: 14px; color: #16a34a; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #16a34a; padding-bottom: 3px;">📟 Machine</h3>
+           <div style="font-size: 13px;">
+               <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                   <span>M1:</span>
+                   <span>€${m1}</span>
+               </div>
+               <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                   <span>M2:</span>
+                   <span>€${m2}</span>
+               </div>
+               <div style="margin-top: 10px; padding: 10px; background-color: #f0fdf4; border-radius: 4px; display: flex; justify-content: space-between; font-weight: bold; border: 1px solid #bcf0da; color: #16a34a;">
+                   <span>🤖 MACHINE TOTAL:</span>
+                   <span>${machineTotalTotal}${machineTick}</span>
+               </div>
+           </div>
+       </div>
+
+       <!-- Delivery Section -->
+       <div style="margin-bottom: 25px;">
+           <h3 style="font-size: 14px; color: #16a34a; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #16a34a; padding-bottom: 3px;">🚚 Total</h3>
+           <div style="font-size: 13px;">
+               <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                   <span>🍽️ EAT IN:</span>
+                   <span>€${exp1}</span>
+               </div>
+               <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                   <span>📱 FLIPDISH:</span>
+                   <span>€${exp2}</span>
+               </div>
+               <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                   <span>🛍️ TAKE AWAY:</span>
+                   <span>€${exp3}</span>
+               </div>
+               <div style="display: flex; justify-content: space-between; margin-top: 5px; border-top: 1px dashed #ddd; padding-top: 5px;">
+                   <span>🍕 Just Eat:</span>
+                   <span>€${justEat}</span>
+               </div>
+               <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                   <span>🍔 Deliveroo:</span>
+                   <span>€${deliveroo}</span>
+               </div>
+               <div style="display: flex; justify-content: space-between;">
+                   <span>🚗 Uber:</span>
+                   <span>€${uber}</span>
+               </div>
+           </div>
+       </div>
+
+       <!-- Grand Total -->
+       <div style="text-align: center; background-color: #16a34a; color: #fff; padding: 15px; border-radius: 6px;">
+           <div style="font-size: 14px; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 1px;">🌟 Grand Total</div>
+           <div style="font-size: 28px; font-weight: bold;">${grandTotal}</div>
+       </div>
+
+       <div style="text-align: center; margin-top: 25px; padding-top: 15px; border-top: 1px dashed #ccc;">
+           <p style="margin: 0; font-size: 11px; color: #999; text-transform: uppercase;">Thank You - Tuk Asian Street</p>
+       </div>
+     </div>
+   </div>
+ </div>
+             `;
+
+             const emailData = {
+                  to_name: "Lu Wei",
+                  from_name: creator,
+                  date: date,
+                  docket_subject: `𝗡𝗜𝗚𝗛𝗧 𝗥𝗘𝗣𝗢𝗥𝗧 | ${date} (tuk fairview)`,
+                  message_html: emailHtml, // Use message_html if your EmailJS template supports HTML
+                  message: "Please check the HTML version for the receipt layout.",
+                  to_email: "nutantowers@gmail.com"
+              };
+
+            // Update UI state
+            btn.disabled = true;
+            btnText.textContent = 'Sending...';
+            loader.classList.remove('hidden');
+
+            try {
+                // Replace these with your actual IDs from EmailJS dashboard
+                const SERVICE_ID = "service_jwwqawx"; // e.g., "service_gmail"
+                const TEMPLATE_ID = "template_ucfxcon"; // e.g., "template_docket"
+
+                await emailjs.send(SERVICE_ID, TEMPLATE_ID, emailData);
+                
+                showNotification(`Docket sent successfully to Lu Wei!`);
+            } catch (error) {
+                console.error('Email failed:', error);
+                showNotification('Failed to send email. Check console for details.', 'error');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Send to Lu Wei';
+                loader.classList.add('hidden');
+            }
         }
 
         // Initialize calculations on page load
