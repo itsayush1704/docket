@@ -1002,14 +1002,14 @@
              `;
 
              const emailData = {
-                  to_name: "Lu Wei",
-                  from_name: creator,
-                  date: date,
-                  docket_subject: `𝗡𝗜𝗚𝗛𝗧 𝗥𝗘𝗣𝗢𝗥𝗧 | ${date} (tuk fairview)`,
-                  message_html: emailHtml, // Use message_html if your EmailJS template supports HTML
-                  message: "Please check the HTML version for the receipt layout.",
-                  to_email: "nutantowers@gmail.com"
-              };
+                   to_name: "Lu Wei",
+                   from_name: `TUK FAIRVIEW (${creator})`,
+                   date: date,
+                   docket_subject: `${date} | (tuk fairview)`,
+                   message_html: emailHtml, // Use message_html if your EmailJS template supports HTML
+                   message: "Please check the HTML version for the receipt layout.",
+                   to_email: "nutantowers@gmail.com"
+               };
 
             // Update UI state
             btn.disabled = true;
