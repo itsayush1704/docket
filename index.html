@@ -139,11 +139,18 @@
                         </button>
                     </div>
                     
-                    <!-- Notification Toast -->
-                    <div id="notification" class="hidden fixed top-6 right-6 z-50 animate-bounce-delay-1">
-                        <div id="notification-content" class="px-6 py-3 rounded-lg shadow-2xl text-white font-bold flex items-center gap-3">
-                            <span id="notification-icon"></span>
-                            <span id="notification-text"></span>
+                    <!-- Notification Modal -->
+                    <div id="notification" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+                        <div id="notification-content" class="relative px-8 py-10 rounded-2xl shadow-2xl text-white font-bold flex flex-col items-center gap-4 transform transition-all animate-bounce-delay-1 max-w-sm w-full text-center">
+                            <span id="notification-icon" class="text-6xl mb-2"></span>
+                            <span id="notification-text" class="text-2xl leading-tight"></span>
+                            <button 
+                                onclick="document.getElementById('notification').classList.add('hidden')"
+                                class="mt-6 bg-white/20 hover:bg-white/30 px-6 py-2 rounded-full text-sm transition-colors"
+                            >
+                                Dismiss
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -792,16 +799,19 @@
             text.textContent = message;
             
             if (type === 'success') {
-                content.className = 'px-6 py-3 rounded-lg shadow-2xl text-white font-bold flex items-center gap-3 bg-green-600';
+                content.className = 'relative px-8 py-10 rounded-2xl shadow-2xl text-white font-bold flex flex-col items-center gap-4 transform transition-all animate-bounce-delay-1 max-w-sm w-full text-center bg-green-600';
                 icon.innerHTML = '✅';
             } else {
-                content.className = 'px-6 py-3 rounded-lg shadow-2xl text-white font-bold flex items-center gap-3 bg-red-600';
+                content.className = 'relative px-8 py-10 rounded-2xl shadow-2xl text-white font-bold flex flex-col items-center gap-4 transform transition-all animate-bounce-delay-1 max-w-sm w-full text-center bg-red-600';
                 icon.innerHTML = '❌';
             }
             
             notification.classList.remove('hidden');
+            notification.classList.add('flex'); // Ensure flex is applied for centering
+            
             setTimeout(() => {
                 notification.classList.add('hidden');
+                notification.classList.remove('flex');
             }, 5000);
         }
 
